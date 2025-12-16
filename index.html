@@ -1,31 +1,88 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>Controle Financeiro Pessoal</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 40px;
       background: #f5f5f5;
+      padding: 30px;
     }
     .card {
       background: white;
       padding: 20px;
-      max-width: 500px;
+      max-width: 600px;
+      margin: auto;
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    h1 {
-      margin-top: 0;
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
     }
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .saldo {
+      font-size: 20px;
+      margin-top: 15px;
+    }
+    .positivo { color: green; }
+    .negativo { color: red; }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>Controle Financeiro Pessoal</h1>
-    <p>Seu sistema está online.</p>
-    <p>Em breve você poderá controlar suas receitas e despesas aqui.</p>
-  </div>
+
+<div class="card">
+  <h1>Controle Financeiro</h1>
+
+  <label>Descrição</label>
+  <input id="descricao" placeholder="Ex: Mercado">
+
+  <label>Valor</label>
+  <input id="valor" type="number" placeholder="Ex: 100">
+
+  <label>Tipo</label>
+  <select id="tipo">
+    <option value="receita">Receita</option>
+    <option value="despesa">Despesa</option>
+  </select>
+
+  <button onclick="adicionar()">Adicionar</button>
+
+  <div class="saldo" id="saldo">Saldo: R$ 0</div>
+</div>
+
+<script>
+  let saldo = 0;
+
+  function adicionar() {
+    const valor = Number(document.getElementById("valor").value);
+    const tipo = document.getElementById("tipo").value;
+
+    if (!valor) return;
+
+    if (tipo === "receita") {
+      saldo += valor;
+    } else {
+      saldo -= valor;
+    }
+
+    const saldoEl = document.getElementById("saldo");
+    saldoEl.innerText = "Saldo: R$ " + saldo.toFixed(2);
+    saldoEl.className = "saldo " + (saldo >= 0 ? "positivo" : "negativo");
+
+    document.getElementById("valor").value = "";
+    document.getElementById("descricao").value = "";
+  }
+</script>
+
 </body>
 </html>
+
