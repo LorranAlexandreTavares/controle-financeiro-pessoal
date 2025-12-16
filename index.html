@@ -6,83 +6,146 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      padding: 30px;
+      background: #f3f4f6;
+      margin: 0;
+      padding: 0;
     }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 40px;
+    }
+
     .card {
       background: white;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
+      padding: 30px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,.1);
     }
-    input, select, button {
+
+    h1, h2 {
+      margin-top: 0;
+    }
+
+    input, button {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
+      margin-top: 10px;
     }
+
     button {
       background: #2563eb;
       color: white;
       border: none;
-      border-radius: 4px;
+      border-radius: 5px;
       cursor: pointer;
     }
-    .saldo {
-      font-size: 20px;
-      margin-top: 15px;
+
+    .dashboard {
+      display: none;
     }
-    .positivo { color: green; }
-    .negativo { color: red; }
+
+    .box {
+      padding: 20px;
+      border-radius: 6px;
+      margin-top: 15px;
+      color: white;
+    }
+
+    .verde {
+      background: #16a34a;
+    }
+
+    .vermelho {
+      background: #dc2626;
+    }
   </style>
 </head>
 <body>
 
-<div class="card">
-  <h1>Controle Financeiro</h1>
+<div class="container">
 
-  <label>Descrição</label>
-  <input id="descricao" placeholder="Ex: Mercado">
+  <!-- TELA DE CADASTRO -->
+  <div id="cadastro" class="card">
+    <h1>Bem-vindo 👋</h1>
+    <p>Crie seu perfil para começar</p>
 
-  <label>Valor</label>
-  <input id="valor" type="number" placeholder="Ex: 100">
+    <input id="nome" placeholder="Nome">
+    <input id="idade" type="number" placeholder="Idade">
+    <input id="profissao" placeholder="Profissão">
+    <input id="meta" type="number" placeholder="Meta de economia mensal (R$)">
 
-  <label>Tipo</label>
-  <select id="tipo">
-    <option value="receita">Receita</option>
-    <option value="despesa">Despesa</option>
-  </select>
+    <button onclick="salvarUsuario()">Criar perfil</button>
+  </div>
 
-  <button onclick="adicionar()">Adicionar</button>
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="dashboard card">
+    <h2 id="boasvindas"></h2>
 
-  <div class="saldo" id="saldo">Saldo: R$ 0</div>
+    <div id="status" class="box"></div>
+
+    <p><strong>Meta mensal:</strong> R$ <span id="metaValor"></span></p>
+    <p><strong>Saldo mensal atual:</strong> R$ <span id="saldoAtual">0</span></p>
+  </div>
+
 </div>
 
 <script>
-  let saldo = 0;
+let dados = JSON.parse(localStorage.getItem("appFinanceiro")) || null;
 
-  function adicionar() {
-    const valor = Number(document.getElementById("valor").value);
-    const tipo = document.getElementById("tipo").value;
+function salvarUsuario() {
+  dados = {
+    usuario: {
+      nome: nome.value,
+      idade: idade.value,
+      profissao: profissao.value,
+      meta: Number(meta.value)
+    },
+    entradas: [],
+    saidas: []
+  };
 
-    if (!valor) return;
+  localStorage.setItem("appFinanceiro", JSON.stringify(dados));
+  carregarApp();
+}
 
-    if (tipo === "receita") {
-      saldo += valor;
-    } else {
-      saldo -= valor;
-    }
+function carregarApp() {
+  document.getElementById("cadastro").style.display = "none";
+  document.getElementById("dashboard").style.display = "block";
 
-    const saldoEl = document.getElementById("saldo");
-    saldoEl.innerText = "Saldo: R$ " + saldo.toFixed(2);
-    saldoEl.className = "saldo " + (saldo >= 0 ? "positivo" : "negativo");
+  const { nome, meta } = dados.usuario;
 
-    document.getElementById("valor").value = "";
-    document.getElementById("descricao").value = "";
+  document.getElementById("boasvindas").innerText = `Olá, ${nome}`;
+  document.getElementById("metaValor").innerText = meta.toFixed(2);
+
+  atualizarDashboard();
+}
+
+function atualizarDashboard() {
+  const totalEntradas = dados.entradas.reduce((s, v) => s + v, 0);
+  const totalSaidas = dados.saidas.reduce((s, v) => s + v, 0);
+  const saldo = totalEntradas - totalSaidas;
+
+  document.getElementById("saldoAtual").innerText = saldo.toFixed(2);
+
+  const status = document.getElementById("status");
+
+  const restante = saldo - dados.usuario.meta;
+
+  if (restante >= 0) {
+    status.className = "box verde";
+    status.innerText = `Você ainda pode gastar R$ ${restante.toFixed(2)} este mês`;
+  } else {
+    status.className = "box vermelho";
+    status.innerText = `Você ultrapassou a meta em R$ ${Math.abs(restante).toFixed(2)}`;
   }
+}
+
+if (dados && dados.usuario) {
+  carregarApp();
+}
 </script>
 
 </body>
 </html>
-
