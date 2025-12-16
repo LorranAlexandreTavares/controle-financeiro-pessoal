@@ -1,151 +1,54 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <title>Controle Financeiro Pessoal</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      margin: 0;
-      padding: 0;
-    }
+<meta charset="UTF-8">
+<title>Controle Financeiro Pessoal</title>
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 40px;
-    }
-
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.1);
-    }
-
-    h1, h2 {
-      margin-top: 0;
-    }
-
-    input, button {
-      width: 100%;
-      padding: 10px;
-      margin-top: 10px;
-    }
-
-    button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-
-    .dashboard {
-      display: none;
-    }
-
-    .box {
-      padding: 20px;
-      border-radius: 6px;
-      margin-top: 15px;
-      color: white;
-    }
-
-    .verde {
-      background: #16a34a;
-    }
-
-    .vermelho {
-      background: #dc2626;
-    }
-  </style>
-</head>
-<body>
-
-<div class="container">
-
-  <!-- TELA DE CADASTRO -->
-  <div id="cadastro" class="card">
-    <h1>Bem-vindo 👋</h1>
-    <p>Crie seu perfil para começar</p>
-
-    <input id="nome" placeholder="Nome">
-    <input id="idade" type="number" placeholder="Idade">
-    <input id="profissao" placeholder="Profissão">
-    <input id="meta" type="number" placeholder="Meta de economia mensal (R$)">
-
-    <button onclick="salvarUsuario()">Criar perfil</button>
-  </div>
-
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="dashboard card">
-    <h2 id="boasvindas"></h2>
-
-    <div id="status" class="box"></div>
-
-    <p><strong>Meta mensal:</strong> R$ <span id="metaValor"></span></p>
-    <p><strong>Saldo mensal atual:</strong> R$ <span id="saldoAtual">0</span></p>
-  </div>
-
-</div>
-
-<script>
-let dados = JSON.parse(localStorage.getItem("appFinanceiro")) || null;
-
-function salvarUsuario() {
-  dados = {
-    usuario: {
-      nome: nome.value,
-      idade: idade.value,
-      profissao: profissao.value,
-      meta: Number(meta.value)
-    },
-    entradas: [],
-    saidas: []
-  };
-
-  localStorage.setItem("appFinanceiro", JSON.stringify(dados));
-  carregarApp();
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f3f4f6;
 }
 
-function carregarApp() {
-  document.getElementById("cadastro").style.display = "none";
-  document.getElementById("dashboard").style.display = "block";
-
-  const { nome, meta } = dados.usuario;
-
-  document.getElementById("boasvindas").innerText = `Olá, ${nome}`;
-  document.getElementById("metaValor").innerText = meta.toFixed(2);
-
-  atualizarDashboard();
+.app {
+  display: flex;
+  min-height: 100vh;
 }
 
-function atualizarDashboard() {
-  const totalEntradas = dados.entradas.reduce((s, v) => s + v, 0);
-  const totalSaidas = dados.saidas.reduce((s, v) => s + v, 0);
-  const saldo = totalEntradas - totalSaidas;
-
-  document.getElementById("saldoAtual").innerText = saldo.toFixed(2);
-
-  const status = document.getElementById("status");
-
-  const restante = saldo - dados.usuario.meta;
-
-  if (restante >= 0) {
-    status.className = "box verde";
-    status.innerText = `Você ainda pode gastar R$ ${restante.toFixed(2)} este mês`;
-  } else {
-    status.className = "box vermelho";
-    status.innerText = `Você ultrapassou a meta em R$ ${Math.abs(restante).toFixed(2)}`;
-  }
+.menu {
+  width: 220px;
+  background: #111827;
+  color: white;
+  padding: 20px;
 }
 
-if (dados && dados.usuario) {
-  carregarApp();
+.menu h2 {
+  margin-top: 0;
 }
-</script>
 
-</body>
-</html>
+.menu button {
+  width: 100%;
+  background: none;
+  border: none;
+  color: white;
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.menu button:hover {
+  background: #1f2937;
+}
+
+.content {
+  flex: 1;
+  padding: 30px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shado
+
