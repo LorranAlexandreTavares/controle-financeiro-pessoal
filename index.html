@@ -2,260 +2,390 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<title>Controle Financeiro Pessoal</title>
-
+<title>Controle Financeiro Avançado</title>
 <style>
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f3f4f6;
-}
-
-.app {
-  display: flex;
-  min-height: 100vh;
-}
-
-.menu {
-  width: 230px;
-  background: #111827;
-  color: white;
-  padding: 20px;
-}
-
-.menu h2 {
-  margin-top: 0;
-}
-
-.menu button {
-  width: 100%;
-  background: none;
-  border: none;
-  color: white;
-  text-align: left;
-  padding: 12px;
-  cursor: pointer;
-  border-radius: 4px;
-}
-
-.menu button:hover {
-  background: #1f2937;
-}
-
-.content {
-  flex: 1;
-  padding: 30px;
-}
-
-.card {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,.1);
-  margin-bottom: 20px;
-}
-
-input, button {
-  width: 100%;
-  padding: 10px;
-  margin-top: 10px;
-}
-
-button.primary {
-  background: #2563eb;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.verde {
-  background: #16a34a;
-  color: white;
-}
-
-.vermelho {
-  background: #dc2626;
-  color: white;
-}
-
-small {
-  color: #555;
-}
+/* Estilos básicos (mantidos e ligeiramente ajustados) */
+body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
+.app { display: flex; min-height: 100vh; }
+.menu { width: 250px; background: #1f2937; color: white; padding: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.1); }
+.menu h2 { margin-top: 0; border-bottom: 1px solid #374151; padding-bottom: 15px; margin-bottom: 20px; }
+.menu button { width: 100%; background: none; border: none; color: white; text-align: left; padding: 15px; cursor: pointer; border-radius: 6px; margin-bottom: 5px; transition: background 0.3s; font-size: 16px; }
+.menu button:hover, .menu button.active { background: #374151; }
+.content { flex: 1; padding: 30px; }
+.card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,.08); margin-bottom: 25px; }
+input, button, select { padding: 12px; margin-top: 10px; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+input, select { width: 100%; }
+button.primary { background: #10b981; color: white; border: none; cursor: pointer; transition: background 0.3s; }
+button.primary:hover { background: #059669; }
+.verde { background: #16a34a; color: white; padding: 15px; border-radius: 6px; text-align: center; }
+.vermelho { background: #ef4444; color: white; padding: 15px; border-radius: 6px; text-align: center; }
+.saldo-card { display: flex; justify-content: space-around; text-align: center; gap: 20px; }
+.saldo-item { flex: 1; padding: 15px; border-radius: 8px; font-weight: bold; }
+.saldo-item.entrada { background-color: #d1fae5; color: #065f46; }
+.saldo-item.saida { background-color: #fee2e2; color: #991b1b; }
+.meta-progresso { height: 10px; background-color: #e5e7eb; border-radius: 5px; margin-top: 10px; }
+.meta-progresso-bar { height: 100%; background-color: #3b82f6; border-radius: 5px; transition: width 0.5s; }
+.historico-mes { border-left: 3px solid #6366f1; padding-left: 15px; margin-bottom: 20px; }
+.transacao { border-bottom: 1px dashed #e5e7eb; padding: 8px 0; display: flex; justify-content: space-between; font-size: 0.9em; }
 </style>
 </head>
 
 <body>
 
-<!-- CADASTRO -->
 <div id="cadastro" class="content">
-  <div class="card">
-    <h1>Criar Perfil</h1>
-    <input id="nome" placeholder="Nome">
-    <input id="idade" type="number" placeholder="Idade">
-    <input id="profissao" placeholder="Profissão">
-    <input id="meta" type="number" placeholder="Meta mensal de economia (R$)">
-    <button class="primary" onclick="salvarUsuario()">Criar perfil</button>
-  </div>
+    <div class="card">
+        <h1>Primeiro Acesso</h1>
+        <input id="nome" placeholder="Seu Nome">
+        <input id="metaEconomia" type="number" placeholder="Meta de Economia Mensal (R$)">
+        <button class="primary" onclick="salvarUsuario()">Iniciar Controle</button>
+    </div>
 </div>
 
-<!-- APP -->
 <div id="app" class="app" style="display:none">
 
-  <div class="menu">
-    <h2>Meu Financeiro</h2>
-    <button onclick="mostrar('inicio')">Início</button>
-    <button onclick="mostrar('entradas')">Entradas</button>
-    <button onclick="mostrar('saidas')">Saídas</button>
-    <button onclick="mostrar('metas')">Metas</button>
-    <button onclick="mostrar('historico')">Histórico</button>
-  </div>
+    <div class="menu">
+        <h2>📊 Financeiro</h2>
+        <button id="btn-inicio" onclick="mostrar('inicio')">Início</button>
+        <button id="btn-entradas" onclick="mostrar('entradas')">Adicionar Entrada</button>
+        <button id="btn-saidas" onclick="mostrar('saidas')">Adicionar Saída</button>
+        <button id="btn-metas" onclick="mostrar('metas')">Metas e Objetivos</button>
+        <button id="btn-historico" onclick="mostrar('historico')">Histórico Mensal</button>
+        <button id="btn-graficos" onclick="mostrar('graficos')">Gráficos de Desempenho</button>
+    </div>
 
-  <div class="content">
-    <div id="inicio" class="pagina card"></div>
-    <div id="entradas" class="pagina card" style="display:none"></div>
-    <div id="saidas" class="pagina card" style="display:none"></div>
-    <div id="metas" class="pagina card" style="display:none"></div>
-    <div id="historico" class="pagina card" style="display:none"></div>
-  </div>
+    <div class="content">
+        <div id="inicio" class="pagina card"></div>
+        <div id="entradas" class="pagina card" style="display:none"></div>
+        <div id="saidas" class="pagina card" style="display:none"></div>
+        <div id="metas" class="pagina card" style="display:none"></div>
+        <div id="historico" class="pagina card" style="display:none"></div>
+        <div id="graficos" class="pagina card" style="display:none"></div>
+    </div>
 
 </div>
 
 <script>
-let dados = JSON.parse(localStorage.getItem("appFinanceiro"));
+// Variável global para armazenar os dados do app
+let dados;
+const STORAGE_KEY = "appFinanceiroPro";
+const PAGINAS = ['inicio', 'entradas', 'saidas', 'metas', 'historico', 'graficos'];
 
-function salvarUsuario() {
-  dados = {
-    usuario: {
-      nome: nome.value,
-      idade: idade.value,
-      profissao: profissao.value,
-      meta: Number(meta.value)
-    },
-    entradas: [],
-    saidas: [],
-    metas: []
-  };
-  localStorage.setItem("appFinanceiro", JSON.stringify(dados));
-  iniciarApp();
+// --- FUNÇÕES DE DADOS E ARMAZENAMENTO ---
+
+function carregarDados() {
+    const storage = localStorage.getItem(STORAGE_KEY);
+    if (storage) {
+        dados = JSON.parse(storage);
+    } else {
+        // Estrutura inicial, caso não haja dados
+        dados = {
+            usuario: { nome: "", metaEconomia: 0 },
+            transacoes: [], // Transações unificadas (Entrada/Saída)
+            metas: []
+        };
+    }
 }
 
+function salvarDados() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(dados));
+}
+
+function salvarUsuario() {
+    dados = {
+        usuario: {
+            nome: nome.value || "Usuário",
+            metaEconomia: Number(metaEconomia.value) || 0
+        },
+        transacoes: [],
+        metas: []
+    };
+    salvarDados();
+    iniciarApp();
+}
+
+function adicionarTransacao(tipo) { // tipo: 'entrada' ou 'saida'
+    const valorInput = document.getElementById(`valor${tipo}`);
+    const descricaoInput = document.getElementById(`descricao${tipo}`);
+
+    if (valorInput.value && descricaoInput.value) {
+        dados.transacoes.push({
+            tipo: tipo,
+            valor: Number(valorInput.value),
+            descricao: descricaoInput.value,
+            data: new Date().toISOString()
+        });
+        salvarDados();
+        mostrar("inicio"); // Volta para o Início após adicionar
+    } else {
+        alert("Preencha todos os campos!");
+    }
+}
+
+// --- FUNÇÕES DE CÁLCULO GERAL ---
+
+function calcularTotais(transacoes) {
+    const totalE = transacoes.filter(t => t.tipo === 'entrada').reduce((s, t) => s + t.valor, 0);
+    const totalS = transacoes.filter(t => t.tipo === 'saida').reduce((s, t) => s + t.valor, 0);
+    const saldo = totalE - totalS;
+    return { totalE, totalS, saldo };
+}
+
+function calcularDesempenhoMensal() {
+    const hoje = new Date();
+    const mesAtual = hoje.getMonth();
+    const anoAtual = hoje.getFullYear();
+
+    const transacoesMes = dados.transacoes.filter(t => {
+        const data = new Date(t.data);
+        return data.getMonth() === mesAtual && data.getFullYear() === anoAtual;
+    });
+
+    const { totalE, totalS, saldo } = calcularTotais(transacoesMes);
+
+    const restante = saldo - dados.usuario.metaEconomia;
+
+    return { totalE, totalS, saldo, restante };
+}
+
+
+// --- FUNÇÕES DE NAVEGAÇÃO E INÍCIO ---
+
 function iniciarApp() {
-  cadastro.style.display = "none";
-  app.style.display = "flex";
-  mostrar("inicio");
+    carregarDados();
+    if (dados.usuario.nome) {
+        document.getElementById('cadastro').style.display = "none";
+        document.getElementById('app').style.display = "flex";
+        mostrar("inicio");
+    }
 }
 
 function mostrar(pagina) {
-  document.querySelectorAll(".pagina").forEach(p => p.style.display = "none");
-  document.getElementById(pagina).style.display = "block";
+    // Esconde todas as páginas e remove a classe 'active'
+    PAGINAS.forEach(p => {
+        document.getElementById(p).style.display = "none";
+        document.getElementById(`btn-${p}`).classList.remove('active');
+    });
 
-  if (pagina === "inicio") renderInicio();
-  if (pagina === "entradas") renderEntradas();
-  if (pagina === "saidas") renderSaidas();
-  if (pagina === "metas") renderMetas();
-  if (pagina === "historico") renderHistorico();
+    // Mostra a página solicitada e marca o botão como 'active'
+    document.getElementById(pagina).style.display = "block";
+    document.getElementById(`btn-${pagina}`).classList.add('active');
+
+    // Renderiza o conteúdo da página
+    if (pagina === "inicio") renderInicio();
+    if (pagina === "entradas") renderEntradas();
+    if (pagina === "saidas") renderSaidas();
+    if (pagina === "metas") renderMetas();
+    if (pagina === "historico") renderHistorico();
+    if (pagina === "graficos") renderGraficos();
 }
 
-function renderInicio() {
-  const totalE = dados.entradas.reduce((s, e) => s + e.valor, 0);
-  const totalS = dados.saidas.reduce((s, s2) => s + s2.valor, 0);
-  const saldo = totalE - totalS;
-  const restante = saldo - dados.usuario.meta;
 
-  inicio.innerHTML = `
-    <h2>Olá, ${dados.usuario.nome}</h2>
-    <p><strong>Saldo mensal:</strong> R$ ${saldo.toFixed(2)}</p>
-    <div class="${restante >= 0 ? 'verde' : 'vermelho'} card">
-      ${restante >= 0
-        ? `Você ainda pode gastar R$ ${restante.toFixed(2)}`
-        : `Você ultrapassou R$ ${Math.abs(restante).toFixed(2)}`}
-    </div>
-  `;
+// --- FUNÇÕES DE RENDERIZAÇÃO (VISUALIZAÇÃO) ---
+
+function renderInicio() {
+    const { totalE, totalS, saldo, restante } = calcularDesempenhoMensal();
+
+    inicio.innerHTML = `
+        <h2>Olá, ${dados.usuario.nome}! </h2>
+        <h3>Desempenho Mensal (Mês Atual)</h3>
+        
+        <div class="saldo-card">
+            <div class="saldo-item entrada">
+                <span>Total Entradas</span>
+                <p>R$ ${totalE.toFixed(2)}</p>
+            </div>
+            <div class="saldo-item saida">
+                <span>Total Saídas</span>
+                <p>R$ ${totalS.toFixed(2)}</p>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top:20px;">
+            <h3>Saldo Atual: R$ ${saldo.toFixed(2)}</h3>
+        </div>
+
+        <div class="${restante >= 0 ? 'verde' : 'vermelho'} card">
+            <h4>Meta de Economia: R$ ${dados.usuario.metaEconomia.toFixed(2)}</h4>
+            ${restante >= 0
+                ? `<p>Parabéns! Você economizou R$ ${restante.toFixed(2)} acima da meta!</p>`
+                : `<p>Atenção! Você precisa economizar mais R$ ${Math.abs(restante).toFixed(2)} para atingir a meta.</p>`}
+        </div>
+    `;
 }
 
 function renderEntradas() {
-  entradas.innerHTML = `
-    <h2>Entradas</h2>
-    <input id="valorEntrada" type="number" placeholder="Valor da entrada">
-    <button class="primary" onclick="dados.entradas.push({valor:Number(valorEntrada.value),data:new Date()}); salvar()">Adicionar</button>
-  `;
+    entradas.innerHTML = `
+        <h2>➕ Adicionar Nova Entrada</h2>
+        <input id="descricaoentrada" placeholder="Descrição (Ex: Salário, Freelance)">
+        <input id="valorentrada" type="number" placeholder="Valor da Entrada (R$)">
+        <button class="primary" onclick="adicionarTransacao('entrada')">Registrar Entrada</button>
+    `;
 }
 
 function renderSaidas() {
-  saidas.innerHTML = `
-    <h2>Saídas</h2>
-    <input id="valorSaida" type="number" placeholder="Valor da saída">
-    <button class="primary" onclick="dados.saidas.push({valor:Number(valorSaida.value),data:new Date()}); salvar()">Adicionar</button>
-  `;
+    saidas.innerHTML = `
+        <h2>➖ Adicionar Nova Saída</h2>
+        <input id="descricaosaida" placeholder="Descrição (Ex: Aluguel, Supermercado)">
+        <input id="valorsaida" type="number" placeholder="Valor da Saída (R$)">
+        <button class="primary" onclick="adicionarTransacao('saida')">Registrar Saída</button>
+    `;
 }
 
 function renderMetas() {
-  let html = `
-    <h2>Metas</h2>
-    <input id="nomeMeta" placeholder="Nome da meta">
-    <input id="valorTotalMeta" type="number" placeholder="Valor total">
-    <input id="valorAtualMeta" type="number" placeholder="Valor atual">
-    <input id="dataMeta" type="date">
-    <button class="primary" onclick="criarMeta()">Criar meta</button>
-    <hr>
-  `;
-
-  dados.metas.forEach((m, i) => {
-    const diff = new Date(m.data) - new Date();
-    const dias = Math.max(Math.floor(diff / (1000*60*60*24)),0);
-    const meses = Math.floor(dias / 30);
-    const anos = Math.floor(meses / 12);
-    const perc = ((m.atual / m.total) * 100).toFixed(1);
-
-    html += `
-      <div class="card">
-        <h3>${m.nome}</h3>
-        <p>Progresso: ${perc}%</p>
-        <p>Falta: R$ ${(m.total - m.atual).toFixed(2)}</p>
-        <p>Prazo: ${anos}a ${meses%12}m ${dias%30}d</p>
-        <input type="number" placeholder="Adicionar valor"
-          onkeydown="if(event.key==='Enter') adicionarValorMeta(${i},this.value)">
-      </div>
+    metas.innerHTML = `
+        <h2>🎯 Metas de Longo Prazo</h2>
+        <div class="card">
+            <h3>Criar Nova Meta</h3>
+            <input id="nomeMeta" placeholder="Nome da meta (Ex: Carro Novo)">
+            <input id="valorTotalMeta" type="number" placeholder="Valor Total Necessário (R$)">
+            <input id="valorAtualMeta" type="number" placeholder="Valor Já Acumulado (R$)">
+            <input id="valorAlocadoMeta" type="number" placeholder="Valor Alocado neste Mês (R$)">
+            <input id="dataMeta" type="date" title="Prazo Final">
+            <button class="primary" onclick="criarMeta()">Salvar Meta</button>
+        </div>
+        <hr style="border: 0; border-top: 1px dashed #ccc; margin: 30px 0;">
+        <h3>Minhas Metas Atuais</h3>
     `;
-  });
 
-  metas.innerHTML = html;
+    if (dados.metas.length === 0) {
+        metas.innerHTML += "<p>Nenhuma meta registrada ainda.</p>";
+        return;
+    }
+
+    dados.metas.forEach((m, i) => {
+        const perc = ((m.atual / m.total) * 100).toFixed(1);
+        const diff = new Date(m.data) - new Date();
+        const dias = Math.max(Math.floor(diff / (1000 * 60 * 60 * 24)), 0);
+        
+        metas.innerHTML += `
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <h3>${m.nome}</h3>
+                    <button style="width: auto; padding: 5px 10px;" onclick="deletarMeta(${i})">X</button>
+                </div>
+                <p>Valor Total: R$ ${m.total.toFixed(2)} | Acumulado: R$ ${m.atual.toFixed(2)}</p>
+                <p>Alocado este Mês: R$ ${m.alocado.toFixed(2)}</p>
+                
+                <div class="meta-progresso">
+                    <div class="meta-progresso-bar" style="width: ${Math.min(perc, 100)}%;"></div>
+                </div>
+                <small>Progresso: ${perc}% | Falta R$ ${(m.total - m.atual).toFixed(2)} | ${dias} dias restantes.</small>
+                
+                <input type="number" placeholder="Adicionar valor extra"
+                    onkeydown="if(event.key==='Enter') adicionarValorMeta(${i},this.value)">
+            </div>
+        `;
+    });
 }
 
 function criarMeta() {
-  dados.metas.push({
-    nome: nomeMeta.value,
-    total: Number(valorTotalMeta.value),
-    atual: Number(valorAtualMeta.value),
-    data: dataMeta.value
-  });
-  salvar();
-  mostrar("metas");
+    dados.metas.push({
+        nome: nomeMeta.value,
+        total: Number(valorTotalMeta.value),
+        atual: Number(valorAtualMeta.value) || 0,
+        alocado: Number(valorAlocadoMeta.value) || 0,
+        data: dataMeta.value
+    });
+    salvarDados();
+    mostrar("metas");
 }
 
 function adicionarValorMeta(i, valor) {
-  dados.metas[i].atual += Number(valor);
-  salvar();
-  mostrar("metas");
+    const numValor = Number(valor);
+    if (numValor > 0) {
+        dados.metas[i].atual += numValor;
+        salvarDados();
+        mostrar("metas");
+    }
 }
+
+function deletarMeta(i) {
+    if(confirm("Tem certeza que deseja deletar esta meta?")) {
+        dados.metas.splice(i, 1);
+        salvarDados();
+        mostrar("metas");
+    }
+}
+
 
 function renderHistorico() {
-  historico.innerHTML = `
-    <h2>Histórico</h2>
-    <p>Entradas: ${dados.entradas.length}</p>
-    <p>Saídas: ${dados.saidas.length}</p>
-    <p>Metas: ${dados.metas.length}</p>
-  `;
+    historico.innerHTML = `<h2>📅 Histórico de Transações por Mês</h2>`;
+
+    if (dados.transacoes.length === 0) {
+        historico.innerHTML += "<p>Nenhuma transação registrada ainda.</p>";
+        return;
+    }
+
+    // 1. Agrupar transações por Mês/Ano
+    const historicoAgrupado = dados.transacoes.reduce((acc, t) => {
+        const data = new Date(t.data);
+        const mesAno = `${data.getFullYear()}-${(data.getMonth() + 1).toString().padStart(2, '0')}`;
+        const mesNome = data.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+
+        if (!acc[mesAno]) {
+            acc[mesAno] = { nome: mesNome, transacoes: [] };
+        }
+        acc[mesAno].transacoes.push(t);
+        return acc;
+    }, {});
+
+    // 2. Renderizar os grupos (do mais recente para o mais antigo)
+    Object.keys(historicoAgrupado).sort().reverse().forEach(mesAno => {
+        const grupo = historicoAgrupado[mesAno];
+        const { totalE, totalS, saldo } = calcularTotais(grupo.transacoes);
+
+        historico.innerHTML += `
+            <div class="historico-mes card">
+                <h3>${grupo.nome}</h3>
+                <p>Entradas: R$ ${totalE.toFixed(2)} | Saídas: R$ ${totalS.toFixed(2)} | Saldo Final: <strong style="color:${saldo >= 0 ? '#10b981' : '#ef4444'}">R$ ${saldo.toFixed(2)}</strong></p>
+                
+                <details>
+                    <summary>Ver ${grupo.transacoes.length} Detalhes</summary>
+                    <div style="margin-top: 10px;">
+                        ${grupo.transacoes.map(t => {
+                            const cor = t.tipo === 'entrada' ? '#065f46' : '#991b1b';
+                            const sinal = t.tipo === 'entrada' ? '+' : '-';
+                            const dataFormatada = new Date(t.data).toLocaleDateString('pt-BR');
+                            return `<div class="transacao">
+                                <span>${dataFormatada} - ${t.descricao}</span>
+                                <span style="color:${cor};">${sinal} R$ ${t.valor.toFixed(2)}</span>
+                            </div>`;
+                        }).join('')}
+                    </div>
+                </details>
+            </div>
+        `;
+    });
 }
 
-function salvar() {
-  localStorage.setItem("appFinanceiro", JSON.stringify(dados));
-  mostrar("inicio");
+function renderGraficos() {
+    graficos.innerHTML = `
+        <h2>📈 Gráficos de Desempenho</h2>
+        <p>Esta seção foi preparada para gráficos. Você pode integrar bibliotecas como Chart.js ou D3.js aqui.</p>
+        
+        <div class="card">
+            <h3>Distribuição de Saídas (Top 5 Meses)</h3>
+            <canvas id="saidasChart" width="400" height="200" style="background: #f9f9f9; border-radius: 5px;"></canvas>
+            <p style="margin-top: 15px;">**Para rodar o gráfico, você precisaria adicionar o código de uma biblioteca de gráficos (como o Chart.js) e escrever a função `desenharGrafico()`.**</p>
+        </div>
+        
+        <div class="card">
+            <h3>Evolução do Saldo ao Longo do Tempo</h3>
+            <canvas id="saldoChart" width="400" height="200" style="background: #f9f9f9; border-radius: 5px;"></canvas>
+        </div>
+    `;
+    // *Aqui é onde você chamaria uma função como desenharGrafico(dadosMensais)*
 }
 
-if (dados && dados.usuario) {
-  iniciarApp();
+
+// --- INICIALIZAÇÃO ---
+carregarDados();
+
+if (dados && dados.usuario && dados.usuario.nome) {
+    iniciarApp();
+} else {
+    document.getElementById('cadastro').style.display = "block";
+    document.getElementById('app').style.display = "none";
 }
 </script>
 
